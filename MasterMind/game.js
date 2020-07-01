@@ -1,5 +1,4 @@
 var colorArr = [
-    "white",
     "red",
     "blue",
     "black",
@@ -16,24 +15,20 @@ var curGame = {
     active_row: 0,
     colorStates: [],
     cols: 0,
-    isSpace: true,
     isRepeat: false
 };
 function putColor() {
     var row = this.parentNode.rowIndex;
     if (row == curGame.active_row) {
         var next = this.getAttribute("presentCol");
-        next = (next + 1) % colorArr.length;
+        next = (+next + 1) % colorArr.length;
         // console.log(next);
         this.style.backgroundColor = colorArr[next];
         this.setAttribute("presentCol", next);
     }
 }
 function buildGuess() {
-    var l = 1, r = colorArr.length;
-    if (curGame.isSpace) {
-        l = 0;
-    }
+    var l = 0, r = colorArr.length;
     var states = [];
     var guess;
     while (states.length != curGame.cols) {
@@ -73,7 +68,7 @@ function buildBoard() {
             colObj = document.createElement("td");
             colObj.classList.add("emptyColors");
             colObj.addEventListener("click", putColor);
-            colObj.setAttribute("presentCol", "0");
+            colObj.setAttribute("presentCol", "-1");
             rowObj.append(colObj);
         }
         colObj = document.createElement("td");
@@ -124,7 +119,7 @@ function createColors() {
         for (var j = 0; j < 4; j++) {
             colObj = document.createElement("td");
             colObj.classList.add("colorsSet");
-            colObj.style.backgroundColor = colorArr[i * 4 + j + 1];
+            colObj.style.backgroundColor = colorArr[i * 4 + j];
             rowObj.append(colObj);
         }
     }
@@ -180,35 +175,30 @@ function countColors() {
         temp = temObj.cells[i].style.backgroundColor;
         colors.push(temp);
     }
+    var colCount = new Array();
+    var orCount = new Array();
+    for (var i = 0; i < colorArr.length; i++) {
+        colCount.push(0);
+        orCount.push(0);
+    }
     for (var i = 0; i < curGame.cols; i++) {
         if (colors[i] == curGame.colorStates[i]) {
-            colors[i] = undefined;
             rCount++;
         }
+        colCount[colorArr.indexOf(colors[i])] += 1;
+        orCount[colorArr.indexOf(curGame.colorStates[i])] += 1;
     }
-    for (var i = 0; i < curGame.cols; i++) {
-        if (colors[i] == undefined)
-            continue;
-        else {
-            for (var j = 0; j < curGame.cols; j++) {
-                if (colors[j] == curGame.colorStates[i]) {
-                    colors[j] = colors[i];
-                    colors[i] = undefined;
-                    wCount++;
-                }
-            }
-        }
+    for (var i = 0; i < colorArr.length; i++) {
+        wCount += colCount[i] < orCount[i] ? colCount[i] : orCount[i];
     }
+    wCount -= rCount;
     addPins(wCount, rCount);
 }
 function correctOrNot() {
     var temObj = document.getElementById("gameTable").rows[curGame.active_row];
     var r = colorArr.length;
-    var l = 1;
+    var l = 0;
     var temp;
-    if (curGame.isSpace) {
-        l--;
-    }
     for (var i = 0; i < curGame.cols; i++) {
         temp = colorArr.indexOf(temObj.cells[i].style.backgroundColor);
         if (temp < l || temp >= r) {
@@ -219,11 +209,11 @@ function correctOrNot() {
 }
 function startNew() {
     curGame.isRepeat = document.getElementById("repeatAllowed").checked;
-    curGame.isSpace = document.getElementById("spaceAllowed").checked;
     curGame.cols = document.getElementById("colsCount")
         .value;
     curGame.colorStates = buildGuess();
     curGame.active_row = totalRow - 1; // Initial Row;
+    document.getElementById("checkButton").classList.remove("hidden");
     buildHidden();
     buildBoard();
     createColors();

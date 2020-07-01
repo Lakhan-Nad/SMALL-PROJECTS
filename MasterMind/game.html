@@ -3,62 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="game.css" />
     <title>MasterMind</title>
-    <style>
-      .emptyColors {
-        border: 1px solid black;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: inline-block;
-        margin: 2px;
-      }
-      .guessColors {
-        border: 1px solid black;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: inline-block;
-        margin: 2px;
-        text-align: center;
-        font-size: larger;
-      }
-      .colorsSet {
-        border: 1px solid black;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: inline-block;
-        margin: 2px;
-      }
-      /* .pinTable {
-        display: inline-block;
-        height: 30px;
-        width: 100px;
-        border: 1px solid black;
-        margin: none;
-      } */
-      .pinColors {
-        border: 1px solid black;
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        margin: none;
-      }
-      #colorPallete {
-        border: 2px solid black;
-      }
-    </style>
   </head>
   <body>
     <table id="hiddenColors"></table>
     <table id="gameTable"></table>
-    <input type="button" value="Check" onclick="correctOrNot()" />
+    <input
+      type="button"
+      value="Check"
+      class="hidden"
+      id="checkButton"
+      onclick="correctOrNot()"
+    />
     <table id="colorPallete"></table>
     <input type="checkbox" name="repeatAllowed" id="repeatAllowed" /> Allow
     Repeat
-    <br />
-    <input type="checkbox" name="spaceAllowed" id="spaceAllowed" /> Allow Spaces
     <br />
     <select name="colsCount" id="colsCount">
       <option value="4" selected>4</option>

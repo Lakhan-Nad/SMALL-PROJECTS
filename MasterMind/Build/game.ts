@@ -2,12 +2,10 @@ interface GameIf {
   active_row: number;
   colorStates: string[];
   cols: number;
-  isSpace: boolean;
   isRepeat: boolean;
 }
 
 const colorArr: string[] = [
-  "white", // Same as space color
   "red",
   "blue",
   "black",
@@ -26,7 +24,6 @@ let curGame: GameIf = {
   active_row: 0,
   colorStates: [],
   cols: 0,
-  isSpace: true,
   isRepeat: false,
 };
 
@@ -34,7 +31,7 @@ function putColor() {
   let row: number = this.parentNode.rowIndex;
   if (row == curGame.active_row) {
     let next: number = (this.getAttribute("presentCol") as unknown) as number;
-    next = (next + 1) % colorArr.length;
+    next = (+next + 1) % colorArr.length;
     // console.log(next);
     this.style.backgroundColor = colorArr[next];
     this.setAttribute("presentCol", <string>(next as unknown));
@@ -42,11 +39,8 @@ function putColor() {
 }
 
 function buildGuess(): string[] {
-  let l: number = 1,
+  let l: number = 0,
     r: number = colorArr.length;
-  if (curGame.isSpace) {
-    l = 0;
-  }
   let states: string[] = [];
   let guess: number;
   while (states.length != curGame.cols) {
@@ -89,7 +83,7 @@ function buildBoard(): void {
       colObj = document.createElement("td");
       colObj.classList.add("emptyColors");
       colObj.addEventListener("click", putColor);
-      colObj.setAttribute("presentCol", "0");
+      colObj.setAttribute("presentCol", "-1");
       rowObj.append(colObj);
     }
     colObj = document.createElement("td");
@@ -149,7 +143,7 @@ function createColors() {
     for (let j: number = 0; j < 4; j++) {
       colObj = document.createElement("td");
       colObj.classList.add("colorsSet");
-      colObj.style.backgroundColor = colorArr[i * 4 + j + 1];
+      colObj.style.backgroundColor = colorArr[i * 4 + j];
       rowObj.append(colObj);
     }
   }
@@ -212,24 +206,23 @@ function countColors(): void {
     temp = temObj.cells[i].style.backgroundColor;
     colors.push(temp);
   }
+  let colCount: number[] = new Array<number>();
+  let orCount: number[] = new Array<number>();
+  for (let i: number = 0; i < colorArr.length; i++) {
+    colCount.push(0);
+    orCount.push(0);
+  }
   for (let i: number = 0; i < curGame.cols; i++) {
     if (colors[i] == curGame.colorStates[i]) {
-      colors[i] = undefined;
       rCount++;
     }
+    colCount[colorArr.indexOf(colors[i])] += 1;
+    orCount[colorArr.indexOf(curGame.colorStates[i])] += 1;
   }
-  for (let i: number = 0; i < curGame.cols; i++) {
-    if (colors[i] == undefined) continue;
-    else {
-      for (let j: number = 0; j < curGame.cols; j++) {
-        if (colors[j] == curGame.colorStates[i]) {
-          colors[j] = colors[i];
-          colors[i] = undefined;
-          wCount++;
-        }
-      }
-    }
+  for (let i: number = 0; i < colorArr.length; i++) {
+    wCount += colCount[i] < orCount[i] ? colCount[i] : orCount[i];
   }
+  wCount -= rCount;
   addPins(wCount, rCount);
 }
 
@@ -238,11 +231,8 @@ function correctOrNot(): void {
     "gameTable"
   ) as HTMLTableElement).rows[curGame.active_row];
   let r: number = colorArr.length;
-  let l: number = 1;
+  let l: number = 0;
   let temp: number;
-  if (curGame.isSpace) {
-    l--;
-  }
   for (let i: number = 0; i < curGame.cols; i++) {
     temp = colorArr.indexOf(temObj.cells[i].style.backgroundColor);
     if (temp < l || temp >= r) {
@@ -256,13 +246,11 @@ function startNew(): void {
   curGame.isRepeat = (document.getElementById(
     "repeatAllowed"
   ) as HTMLInputElement).checked;
-  curGame.isSpace = (document.getElementById(
-    "spaceAllowed"
-  ) as HTMLInputElement).checked;
   curGame.cols = ((document.getElementById("colsCount") as HTMLSelectElement)
     .value as unknown) as number;
   curGame.colorStates = buildGuess();
   curGame.active_row = totalRow - 1; // Initial Row;
+  document.getElementById("checkButton").classList.remove("hidden");
   buildHidden();
   buildBoard();
   createColors();

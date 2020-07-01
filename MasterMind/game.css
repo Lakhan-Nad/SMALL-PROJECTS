@@ -1,0 +1,47 @@
+.emptyColors {
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 2px;
+}
+.guessColors {
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 2px;
+  text-align: center;
+  font-size: larger;
+}
+.colorsSet {
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 2px;
+}
+/* .pinTable {
+    display: inline-block;
+    height: 30px;
+    width: 100px;
+    border: 1px solid black;
+    margin: none;
+  } */
+.pinColors {
+  border: 1px solid black;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin: none;
+}
+#colorPallete {
+  border: 2px solid black;
+}
+
+.hidden {
+  display: none;
+}
